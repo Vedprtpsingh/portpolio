@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="navbar-section"></div>
+    <script>
+        function loadNavbar() {
+            fetch('../navbar.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('navbar-section').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading navbar:', error));
+        }
+        loadNavbar();
+    </script>
+
+    <div id="contact-section"></div>
+    <script>
+        function loadContactSection() {
+            fetch('./section/contecSection.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('contact-section').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading contact section:', error));
+        }
+        loadContactSection();
+    </script>
+
+    <div id="footer-section"></div>
+    <script>
+        function loadFooter() {
+            fetch('../footer.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('footer-section').innerHTML = data;
+                })
+                .catch(error => console.error('Error loading footer:', error));
+        }
+        loadFooter();
+    </script>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>
