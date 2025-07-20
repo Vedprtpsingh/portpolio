@@ -86,11 +86,20 @@ document.addEventListener('DOMContentLoaded', function () {
     themeToggle.classList.add('theme-toggle');
     document.body.prepend(themeToggle);
 
-    // Check for saved theme preference
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    if (savedTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+    // Check for saved theme preference or system preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    } else {
+        // No saved theme, check system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            localStorage.setItem('theme', 'dark');
+        }
     }
 
     themeToggle.addEventListener('click', () => {
@@ -248,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // New form submission handler is inline in index.html and pages/contact.html
 });
 
-
+// Form submission handler
 document.getElementById("form").addEventListener("submit", function (e) {
     e.preventDefault(); // Prevent the default form submission
     document.getElementById("message").textContent = "Submitting..";
@@ -322,81 +331,3 @@ document.getElementById("form").addEventListener("submit", function (e) {
         document.getElementById("message").style.display = "block";
     });
 });
-
-
-
-
-
-document.getElementById("form").addEventListener("submit", function (e) {
-                    e.preventDefault(); // Prevent the default form submission
-                    document.getElementById("message").textContent = "Submitting..";
-                    document.getElementById("message").style.display = "block";
-                    document.getElementById("submit-button").disabled = true;
-
-                    // Collect the form data
-                    var formData = new FormData(this);
-                    
-                    // Add India timezone timestamp
-                    var now = new Date();
-                    var options = { 
-                        timeZone: 'Asia/Kolkata',
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit'
-                    };
-                    var indiaTime = now.toLocaleString('en-IN', options);
-                    formData.append('timestamp', indiaTime);
-
-                    var keyValuePairs = [];
-                    for (var pair of formData.entries()) {
-                        keyValuePairs.push(pair[0] + "=" + pair[1]);
-                    }
-
-                    var formDataString = keyValuePairs.join("&");
-
-                    // Send a POST request to your Google Apps Script
-                    fetch(
-                        "https://script.google.com/macros/s/AKfycby1U614uE5nU41RLZNkf4Ce5_z0pp3rfvs8eCXqGKcHuC6_5R6uktOQsa3RLvEnHEAISg/exec",
-                        {
-                            redirect: "follow",
-                            method: "POST",
-                            body: formDataString,
-                            headers: {
-                                "Content-Type": "text/plain;charset=utf-8",
-                            },
-                        }
-                    )
-                    .then(function (response) {
-                        // Check if the request was successful
-                        if (response) {
-                            return response; // Assuming your script returns JSON response
-                        } else {
-                            throw new Error("Failed to submit the form.");
-                        }
-                    })
-                    .then(function (data) {
-                        // Display a success message
-                        document.getElementById("message").textContent =
-                            "Data submitted successfully!";
-                        document.getElementById("message").style.display = "block";
-                        document.getElementById("message").style.backgroundColor = "green";
-                        document.getElementById("message").style.color = "beige";
-                        document.getElementById("submit-button").disabled = false;
-                        document.getElementById("form").reset();
-
-                        setTimeout(function () {
-                            document.getElementById("message").textContent = "";
-                            document.getElementById("message").style.display = "none";
-                        }, 2600);
-                    })
-                    .catch(function (error) {
-                        // Handle errors, you can display an error message here
-                        console.error(error);
-                        document.getElementById("message").textContent =
-                            "An error occurred while submitting the form.";
-                        document.getElementById("message").style.display = "block";
-                    });
-                });
