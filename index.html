@@ -20,8 +20,8 @@
     <div id="projects-section"></div>
     <div id="skills-section"></div>
     <div id="certifications-section"></div>
-    <div id="contact-section"></div>
     <div id="portfolio-links-section"></div>
+    <div id="contact-section"></div>
   </main>
    <a href="./pages/contact.html"></a>
   <div id="footer-section"></div>
@@ -39,15 +39,96 @@
         "projects-section": "./pages/section/project.html",
         "skills-section": "./pages/section/technicalskills.html",
         "certifications-section": "./pages/section/certifications.html",
-        "contact-section": "./pages/section/contecSection.html",
         "portfolio-links-section": "./pages/section/portfoliolinks.html",
+        "contact-section": "./pages/section/contecSection.html",
         "footer-section": "./pages/footer.html"
       };
 
       for (const [id, url] of Object.entries(sections)) {
         fetch(url)
           .then(res => res.text())
-          .then(html => document.getElementById(id).innerHTML = html)
+          .then(html => {
+            document.getElementById(id).innerHTML = html;
+            if (id === 'contact-section') {
+              const form = document.getElementById('form');
+                if (form) {
+                  form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const submitButton = document.getElementById("submit-button");
+                    const messageDiv = document.getElementById("message");
+                    const originalButtonText = submitButton.innerHTML;
+
+                    messageDiv.textContent = "Submitting..";
+                    messageDiv.style.display = "block";
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+                    var formData = new FormData(this);
+                    var now = new Date();
+                    var options = { 
+                        timeZone: 'Asia/Kolkata',
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    };
+                    var indiaTime = now.toLocaleString('en-IN', options);
+                    formData.append('timestamp', indiaTime);
+
+                    var keyValuePairs = [];
+                    for (var pair of formData.entries()) {
+                        keyValuePairs.push(pair[0] + "=" + pair[1]);
+                    }
+
+                    var formDataString = keyValuePairs.join("&");
+
+                    fetch(
+                        "https://script.google.com/macros/s/AKfycby1U614uE5nU41RLZNkf4Ce5_z0pp3rfvs8eCXqGKcHuC6_5R6uktOQsa3RLvEnHEAISg/exec",
+                        {
+                            redirect: "follow",
+                            method: "POST",
+                            body: formDataString,
+                            headers: {
+                                "Content-Type": "text/plain;charset=utf-8",
+                            },
+                        }
+                    )
+                    .then(function (response) {
+                        if (response) {
+                            return response;
+                        } else {
+                            throw new Error("Failed to submit the form.");
+                        }
+                    })
+                    .then(function (data) {
+                        messageDiv.textContent =
+                            "Data submitted successfully!";
+                        messageDiv.style.display = "block";
+                        messageDiv.style.backgroundColor = "green";
+                        messageDiv.style.color = "beige";
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = originalButtonText;
+                        document.getElementById("form").reset();
+
+                        setTimeout(function () {
+                            messageDiv.textContent = "";
+                            messageDiv.style.display = "none";
+                        }, 2600);
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        messageDiv.textContent =
+                            "An error occurred while submitting the form.";
+                        messageDiv.style.display = "block";
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = originalButtonText;
+                    });
+                  });
+                }
+            }
+          })
           .catch(err => console.error(`Error loading ${id}:`, err));
       }
     });
