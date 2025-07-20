@@ -78,6 +78,10 @@ a:hover {
     color: #ffffff;
 }
 
+[data-theme="dark"] .certification-card p {
+    color: #ffffff;
+}
+
 [data-theme="dark"] .btn {
     color: #121212;
 }
